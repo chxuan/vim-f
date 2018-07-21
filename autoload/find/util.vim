@@ -5,6 +5,36 @@
 " License: MIT
 " ==============================================================
 
+" 获得当前行号
+function! find#util#get_current_row_num()
+    return line(".")
+endfunction
+
+" 获得总行数
+function! find#util#get_total_row_num()
+    return line("$")
+endfunction
+
+" 获得窗口起始行
+function! find#util#get_win_first_row_num()
+    return line(".") - winline() + 1
+endfunction
+
+" 获得窗口高度
+function! find#util#get_win_height()
+    return winheight(winnr('$'))
+endfunction
+
+" 获得窗口文本
+function! find#util#get_win_text()
+    let begin = find#util#get_win_first_row_num()
+    let row = begin + find#util#get_win_height() - 1
+    let total = find#util#get_total_row_num()
+    let end = row < total ? row : total
+
+    return getline(begin, end)
+endfunction
+
 " 查找字符,返回所有下标
 function! find#util#getchar(...)
     let mode = get(a:, 1, 0)
@@ -21,3 +51,40 @@ function! find#util#getchar(...)
         endif
     endwhile
 endfunction
+
+" 显示语法高亮
+function! find#util#show_highlight(pos)
+    execute 'highlight! link Conceal' 'VimF'
+
+    setlocal conceallevel=2
+    setlocal concealcursor=ncv
+
+    let cnt = 1
+    let i = 0
+    let j = 0
+    for p in a:pos
+        let ret = split(p, "-")
+
+        if cnt <= 26
+            call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': nr2char(97 + cnt - 1)})
+        else
+            call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': nr2char(97 + i)})
+            call matchaddpos('Conceal', [[ret[0], ret[1] + 1]], 10, -1, {'conceal': nr2char(97 + j)})
+
+            if j < 25
+                let j += 1
+            else
+                let i += 1
+                let j = 0
+            endif
+        endif
+
+        let cnt += 1
+    endfor
+endfunction
+
+" 清除语法高亮
+function! find#util#clean_highlight()
+    call clearmatches()
+endfunction
+
