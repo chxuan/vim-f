@@ -14,7 +14,24 @@ function! find#find#find_char()
     let target_key = edit#util#getchar()
 
     let pos = <sid>find_pos(target_key)
-    call find#util#show_highlight(pos)
+    let size = len(pos)
+    if size == 1
+        " call <sid>check_edit_type("a")
+    elseif size > 1
+        call find#util#show_highlight(pos)
+        call timer_start(0, 'SelectHighlightChar', {'repeat': 1})
+    else
+        echo "Not found target key: " . target_key
+    endif
+endfunction
+
+" 选择高亮字符
+function! SelectHighlightChar(id)
+    call timer_stop(a:id)
+    let char1 = edit#util#getchar()
+    let char2 = edit#util#getchar()
+    " call <sid>check_edit_type(char)
+    call edit#util#clean_highlight()
 endfunction
 
 " 查找字符位置
@@ -34,6 +51,3 @@ function! s:find_pos(char)
 
     return pos
 endfunction
-
-"
-

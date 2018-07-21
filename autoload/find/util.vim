@@ -59,27 +59,20 @@ function! find#util#show_highlight(pos)
     setlocal conceallevel=2
     setlocal concealcursor=ncv
 
-    let cnt = 1
     let i = 0
     let j = 0
     for p in a:pos
         let ret = split(p, "-")
 
-        if cnt <= 26
-            call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': nr2char(97 + cnt - 1)})
+        call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': nr2char(97 + i)})
+        call matchaddpos('Conceal', [[ret[0], ret[1] + 1]], 10, -1, {'conceal': nr2char(97 + j)})
+
+        if j < 25
+            let j += 1
         else
-            call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': nr2char(97 + i)})
-            call matchaddpos('Conceal', [[ret[0], ret[1] + 1]], 10, -1, {'conceal': nr2char(97 + j)})
-
-            if j < 25
-                let j += 1
-            else
-                let i += 1
-                let j = 0
-            endif
+            let i += 1
+            let j = 0
         endif
-
-        let cnt += 1
     endfor
 endfunction
 
