@@ -71,3 +71,14 @@ function! find#util#clean_highlight()
     call clearmatches()
 endfunction
 
+" 查找元素
+function! find#util#find(src, elem)
+    return match(a:src, a:elem)
+endfunction
+
+" 设置光标位置
+function! find#util#set_cursor_position(row, col)
+    let pos = [0, a:row, a:col, 0]  
+    call setpos(".", pos)
+endfunction
+

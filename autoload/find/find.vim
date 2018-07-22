@@ -8,18 +8,24 @@
 " 高亮属性
 highlight default VimF ctermfg=196 ctermbg=NONE cterm=bold guifg=red guibg=NONE gui=bold
 
+" target_key位置列表
+let s:pos = []
+
+" 高亮字符列表
+let s:chars = []
+
 " 查找字符
 function! find#find#find_char()
     echo "Target key: "
     let target_key = edit#util#getchar()
 
-    let pos = <sid>find_pos(target_key)
-    let size = len(pos)
+    let s:pos = <sid>find_pos(target_key)
+    let size = len(s:pos)
     if size == 1
         " call <sid>check_edit_type("a")
     elseif size > 1
-        let chars = <sid>create_hightlight_char(size)
-        call find#util#show_highlight(pos, chars)
+        let s:chars = <sid>create_hightlight_char(size)
+        call find#util#show_highlight(s:pos, s:chars)
         call timer_start(0, 'SelectHighlightChar', {'repeat': 1})
     else
         echo "Not found target key: " . target_key
@@ -31,7 +37,11 @@ function! SelectHighlightChar(id)
     call timer_stop(a:id)
     let char1 = edit#util#getchar()
     let char2 = edit#util#getchar()
-    " call <sid>check_edit_type(char)
+    let idx = find#util#find(s:chars, char1 . char2)
+    if idx >= 0
+        let ret = split(s:pos[idx], "-")
+        call find#util#set_cursor_position(ret[0], ret[1])
+    endif
     call edit#util#clean_highlight()
 endfunction
 
