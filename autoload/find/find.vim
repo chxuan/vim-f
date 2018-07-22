@@ -18,7 +18,8 @@ function! find#find#find_char()
     if size == 1
         " call <sid>check_edit_type("a")
     elseif size > 1
-        call find#util#show_highlight(pos)
+        let chars = <sid>create_hightlight_char(size)
+        call find#util#show_highlight(pos, chars)
         call timer_start(0, 'SelectHighlightChar', {'repeat': 1})
     else
         echo "Not found target key: " . target_key
@@ -50,4 +51,24 @@ function! s:find_pos(char)
     endfor
 
     return pos
+endfunction
+
+" 创建高亮字符
+function! s:create_hightlight_char(cnt)
+    let chars = []
+
+    let j = 0
+    let k = 0
+    for i in range(1, a:cnt)
+        call add(chars, nr2char(97 + j) . nr2char(97 + k))
+
+        if k < 25
+            let k += 1
+        else
+            let j += 1
+            let k = 0
+        endif
+    endfor
+
+    return chars
 endfunction

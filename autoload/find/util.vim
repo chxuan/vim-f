@@ -53,26 +53,16 @@ function! find#util#getchar(...)
 endfunction
 
 " 显示语法高亮
-function! find#util#show_highlight(pos)
+function! find#util#show_highlight(pos, chars)
     execute 'highlight! link Conceal' 'VimF'
 
     setlocal conceallevel=2
     setlocal concealcursor=ncv
 
-    let i = 0
-    let j = 0
-    for p in a:pos
-        let ret = split(p, "-")
-
-        call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': nr2char(97 + i)})
-        call matchaddpos('Conceal', [[ret[0], ret[1] + 1]], 10, -1, {'conceal': nr2char(97 + j)})
-
-        if j < 25
-            let j += 1
-        else
-            let i += 1
-            let j = 0
-        endif
+    for i in range(0, len(a:pos) - 1)
+        let ret = split(a:pos[i], "-")
+        call matchaddpos('Conceal', [[ret[0], ret[1]]], 10, -1, {'conceal': a:chars[i][0]})
+        call matchaddpos('Conceal', [[ret[0], ret[1] + 1]], 10, -1, {'conceal': a:chars[i][1]})
     endfor
 endfunction
 
